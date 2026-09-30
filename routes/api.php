@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ->only(['index', 'store', 'update', 'destroy']);
 
     Route::apiResource('pay-periods', PayPeriodController::class)
-        ->only(['index', 'show', 'store', 'destroy']);
+        ->only(['index', 'show', 'store', 'update', 'destroy']);
 
     Route::apiResource('budget-categories', BudgetCategoryController::class)
         ->only(['index', 'store', 'update', 'destroy']);

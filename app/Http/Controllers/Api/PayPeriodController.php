@@ -69,6 +69,36 @@ class PayPeriodController extends Controller
         return new PayPeriodResource($payPeriod->load(['incomes', 'deductions']));
     }
 
+    /**
+     * Actualiza los datos del período y reemplaza sus líneas de ingreso.
+     * Los descuentos NO se tocan aquí: quedan fijos desde que se creó la
+     * planilla (mismo motivo que en store()), así que si el usuario
+     * necesita cambiarlos tiene que borrar la planilla y crear una nueva.
+     */
+    public function update(PayPeriodRequest $request, PayPeriod $payPeriod)
+    {
+        $this->authorizeOwnership($request, $payPeriod);
+
+        $payPeriod = DB::transaction(function () use ($request, $payPeriod) {
+            $payPeriod->update($request->safe()->only([
+                'period_start',
+                'period_end',
+                'pay_date',
+                'payment_method',
+                'work_schedule',
+            ]));
+
+            $payPeriod->incomes()->delete();
+            foreach ($request->input('incomes', []) as $income) {
+                $payPeriod->incomes()->create($income);
+            }
+
+            return $payPeriod;
+        });
+
+        return new PayPeriodResource($payPeriod->load(['incomes', 'deductions']));
+    }
+
     public function destroy(Request $request, PayPeriod $payPeriod)
     {
         $this->authorizeOwnership($request, $payPeriod);
