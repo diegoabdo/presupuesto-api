@@ -21,6 +21,15 @@ class SavingsContributionController extends Controller
         return new SavingsGoalResource($savingsGoal->load('contributions'));
     }
 
+    public function update(SavingsContributionRequest $request, SavingsGoal $savingsGoal, int $contribution)
+    {
+        abort_unless($savingsGoal->user_id === $request->user()->id, 403);
+
+        $savingsGoal->contributions()->whereKey($contribution)->firstOrFail()->update($request->validated());
+
+        return new SavingsGoalResource($savingsGoal->load('contributions'));
+    }
+
     public function destroy(Request $request, SavingsGoal $savingsGoal, int $contribution)
     {
         abort_unless($savingsGoal->user_id === $request->user()->id, 403);

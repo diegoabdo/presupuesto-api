@@ -16,10 +16,12 @@ class BudgetCategory extends Model
         'user_id',
         'name',
         'monthly_budget',
+        'is_recurring',
     ];
 
     protected $casts = [
         'monthly_budget' => 'decimal:2',
+        'is_recurring' => 'boolean',
     ];
 
     public function user(): BelongsTo

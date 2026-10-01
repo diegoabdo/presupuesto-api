@@ -10,9 +10,25 @@ use Illuminate\Http\Request;
 
 class BudgetCategoryController extends Controller
 {
+    /**
+     * Una categoría "de un solo mes" (is_recurring=false) solo se lista
+     * durante el mes en que se creó; una recurrente siempre aparece.
+     */
     public function index(Request $request)
     {
-        $categories = $request->user()->budgetCategories()->orderBy('name')->get();
+        $now = now();
+
+        $categories = $request->user()->budgetCategories()
+            ->where(function ($query) use ($now) {
+                $query->where('is_recurring', true)
+                    ->orWhere(function ($query) use ($now) {
+                        $query->where('is_recurring', false)
+                            ->whereYear('created_at', $now->year)
+                            ->whereMonth('created_at', $now->month);
+                    });
+            })
+            ->orderBy('name')
+            ->get();
 
         return BudgetCategoryResource::collection($categories);
     }

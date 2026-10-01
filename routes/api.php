@@ -39,5 +39,6 @@ Route::middleware('auth:sanctum')->group(function () {
         ->only(['index', 'show', 'store', 'update', 'destroy']);
 
     Route::post('/savings-goals/{savingsGoal}/contributions', [SavingsContributionController::class, 'store']);
+    Route::put('/savings-goals/{savingsGoal}/contributions/{contribution}', [SavingsContributionController::class, 'update']);
     Route::delete('/savings-goals/{savingsGoal}/contributions/{contribution}', [SavingsContributionController::class, 'destroy']);
 });
